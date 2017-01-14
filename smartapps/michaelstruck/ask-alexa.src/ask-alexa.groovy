@@ -96,7 +96,7 @@ def mainPageParent() {
             }
         }
         section("Items to interface to Alexa") {
-            href "pageSwitches", title: "Switches/Dimmers/Ambient/Colored Lights", description:getDesc(switchesSel() || dimmersSel() || aLightsSel() || cLightsSel()), state: switchesSel() || dimmersSel() || aLightsSel() || cLightsSel() ? "complete" : null, image:imgURL() + "power.png"
+            href "pageSwitches", title: "Switches/Dimmers/Colored Lights", description:getDesc(switchesSel() || dimmersSel() || cLightsSel()), state: switchesSel() || dimmersSel() || cLightsSel() ? "complete" : null, image:imgURL() + "power.png"
             href "pageDoors", title: "Doors/Windows/Locks", description: getDesc(doorsSel() || locksSel() || ocSensorsSel() || shadesSel()), state: doorsSel() || locksSel() || ocSensorsSel() || shadesSel() ? "complete" : null, image: imgURL() + "lock.png"
             href "pageTemps", title: "Thermostats/Temperature/Humidity", description:getDesc(tstatsSel() || tempsSel() || humidSel()), state: tstatsSel() || tempsSel() || humidSel() ? "complete" : null, image: imgURL() + "temp.png"
             href "pageSpeakers", title: "Connected Speakers", description: getDesc(speakersSel()), state: speakersSel() ? "complete" : null, image:imgURL() + "speaker.png"     
@@ -113,11 +113,10 @@ def mainPageParent() {
 }
 def pageSwitches(){
     dynamicPage(name: "pageSwitches", install: false, uninstall: false) {
-        section { paragraph "Switches/Dimmers/Ambient/Colored lights", image: imgURL() + "power.png"}
+        section { paragraph "Switches/Dimmers/Colored lights", image: imgURL() + "power.png"} 
         section("Choose the devices to interface", hideWhenEmpty: true) {
             input "switches", "capability.switch", title: "Choose Switches (On/Off/Toggle/Status)", multiple: true, required: false
             input "dimmers", "capability.switchLevel", title: "Choose Dimmers (On/Off/Toggle/Level/Status)", multiple: true, required: false
-            input "aLights", "capability.colorTemperature", title: "Choose Ambient Lights (On/Off/Toggle/Level/Color/Status)", multiple: true, required: false
             input "cLights", "capability.colorControl", title: "Choose Colored Lights (On/Off/Toggle/Level/Color/Status)", multiple: true, required: false, submitOnChange: true
         	
         }
@@ -125,7 +124,6 @@ def pageSwitches(){
             section("Devices that can have aliases", hideWhenEmpty: true) {
                 input "switchesAlias", "capability.switch", title: "Choose Switches", multiple: true, required: false
                 input "dimmersAlias", "capability.switchLevel", title: "Choose Dimmers", multiple: true, required: false
-                input "aLightsAlias", "capability.colorTemperature", title: "Choose Ambient Lights", multiple: true, required: false
                 input "cLightsAlias", "capability.colorControl", title: "Choose Colored Lights", multiple: true, required: false, submitOnChange: true
             }
         }
@@ -369,7 +367,7 @@ def pageSettings(){
             href "pageContCommands", title: "Personalization", description: none, state: (contError || contStatus || contAction || contMacro ? "complete" : null)
         }
         section ("Other values / variables"){
-        	if (dimmersSel() || tstatsSel() || aLightsSel() || cLightsSel() || speakersSel()) href "pageDefaultValue", title: "Default Command Values (Dimmers, Volume, etc.)", description: "", state: "complete"
+        	if (dimmersSel() || tstatsSel() || cLightsSel() || speakersSel()) href "pageDefaultValue", title: "Default Command Values (Dimmers, Volume, etc.)", description: "", state: "complete"
             if (speakersSel() || tstatsSel()) href "pageLimitValue", title: "Device Minimum/Maximum Values", description: "", state: "complete"
         	if (!state.accessToken) OAuthToken()
             if (!state.accessToken) paragraph "**You must enable OAuth via the IDE to setup this app**"
@@ -403,14 +401,14 @@ def pageMsgQueue(){
 }
 def pageDefaultValue(){
     dynamicPage(name: "pageDefaultValue", uninstall: false){
-        if (dimmersSel() || tstatsSel() || aLightsSel() || cLightsSel() || speakersSel()){
+        if (dimmersSel() || tstatsSel() || cLightsSel() || speakersSel()){
             section("Increase / Brighten / Decrease / Dim values\n(When no values are requested)"){
-                if (dimmersSel() || aLightsSel() || cLightsSel()) input "lightAmt", "number", title: "Dimmer/Ambient/Colored Lights", defaultValue: 20, required: false
+                if (dimmersSel() || cLightsSel()) input "lightAmt", "number", title: "Dimmer/Colored Lights", defaultValue: 20, required: false
                 if (tstatsSel()) input "tstatAmt", "number", title: "Thermostat Temperature", defaultValue: 5, required: false
                 if (speakersSel()) input "speakerAmt", "number", title: "Speaker Volume", defaultValue: 5, required: false
             }
         }
-        if (dimmersSel() || aLightsSel() || cLightsSel()) {
+        if (dimmersSel() || cLightsSel()) {
         	section("Low / Medium / High values (For dimmers or colored lights)") {
             	input "dimmerLow", "number", title: "\"Low\" Value", defaultValue: 10, required: false
                 input "dimmerMed", "number", title: "\"Medium\" Value", defaultValue: 50, required: false
@@ -548,7 +546,7 @@ def pageGroup() {
 	dynamicPage(name: "pageGroup", install: false, uninstall: false) {
 		section { paragraph "Device Group Settings", image: imgURL() + "folder.png" }
         section (" ") {
-            input "groupType", "enum", title: "Group Type...", options: [["colorTemperature": "Ambient Light (On/Off/Toggle/Level/Color)"],["colorControl": "Colored Light (On/Off/Toggle/Level/Color)"],["switchLevel":"Dimmer (On/Off/Toggle/Level)"],["doorControl": "Door (Open/Close)"],["lock":"Lock (Lock/Unlock)"],
+            input "groupType", "enum", title: "Group Type...", options: [["colorControl": "Colored Light (On/Off/Toggle/Level/Color)"],["switchLevel":"Dimmer (On/Off/Toggle/Level)"],["doorControl": "Door (Open/Close)"],["lock":"Lock (Lock/Unlock)"],
             	["switch":"Switch (On/Off/Toggle)"],["thermostat":"Thermostat (Mode/Off/Setpoint)"],["windowShade": "Window Shades (Open/Close)"]],required: false, multiple: false, submitOnChange:true
     		if (groupType) input "groupDevice${groupType}", "capability.${groupType}", title: "Choose devices...", required: false, multiple: true, submitOnChange:true
         	if (((groupType == "doorControl" && parent.pwNeeded) || (groupType=="lock" && parent.pwNeeded)) && settings."groupDevice${groupType}" ){
@@ -658,17 +656,6 @@ def pageSTDevices(){
             input "dimmers", "capability.switchLevel", title: "Control These Dimmers...", multiple: true, required: false , submitOnChange:true
             if (dimmers) input "dimmersCMD", "enum", title: "Command To Send To Dimmers", options:["on":"Turn on","off":"Turn off","set":"Set level", "toggle":"Toggle the dimmers' on/off state"], multiple: false, required: false, submitOnChange:true
             if (dimmersCMD == "set" && dimmers) input "dimmersLVL", "number", title: "Dimmers Level", description: "Set dimmer level", required: false, defaultValue: 0
-        }
-        section ("Ambient lights", hideWhenEmpty: true){
-            input "aLights", "capability.colorTemperature", title: "Control These Ambient Lights...", multiple: true, required: false, submitOnChange:true
-            if (aLights) input "aLightsCMD", "enum", title: "Command To Send To Ambient Lights", options:["on":"Turn on","off":"Turn off","set":"Set color and temperature", "toggle":"Toggle the lights' on/off state"], multiple: false, required: false, submitOnChange:true
-            if (aLightsCMD == "set" && aLights){
-                input "aLightsCLR", "enum", title: "Choose a Color Temperature...", required: false, multiple:false, options: parent.fillColorTemperatureSettings().name, submitOnChange:true
-                if (aLightsCLR == "Custom-User Defined"){
-                    input "colorTempUserDefined", "number", title: "Ambient Lights Temperature", description: "Set colored light temperature (0 to 100)", required: false, defaultValue: 0
-                }
-                input "aLightsLVL", "number", title: "Ambient Light Level", description: "Set ambient lights level", required: false, defaultValue: 0
-            }
         }
         section ("Colored lights", hideWhenEmpty: true){
             input "cLights", "capability.colorControl", title: "Control These Colored Lights...", multiple: true, required: false, submitOnChange:true
@@ -1079,8 +1066,7 @@ def processList(){
     if (listType=~/speaker/) { outputTxt = speakers && speakers.size()>1 ? "#speakers#" : speakers && speakers.size()==1 ? "@speaker@" : "%speakers%" ; devices=speakers; aliasType="music" }
     if (listType=~/door/) { outputTxt = doors && doors.size()>1 ? "You have the following doors you can open or close: " +  getList(doors) + ". " : doors && doors.size()==1 ? "You have one door, " + getList(doors)+ ", selected that you can open or close. " : "%doors%"; aliasType="door"  }
     if (listType=~/shade/) { outputTxt = shades && shades.size()>1 ? "#window shades#" : shades && shades.size()==1 ? "@window shade@" :"%window shades%"; devices = shades; aliasType="shade" }
-    if (listType=~/lock/) { outputTxt = locks && locks.size()>1 ? "#locks#" : locks && locks.size()==1 ? "@lock@" :"%locks%"; devices=locks; aliasType="lock" }
-    if (listType=~/ambient light/) { outputTxt = aLights && aLights.size()>1 ? "#ambient lights#": aLights && aLights.size()==1 ? "@ambient light@" : "%ambient lights%"; devices=aLights; aliasType="ambient" }
+    if (listType=~/lock/) { outputTxt = locks && locks.size()>1 ? "#locks#" : locks && locks.size()==1 ? "@lock@" :"%locks%"; devices=locks; aliasType="lock" }	
     if (listType=~/colored light/) { outputTxt = cLights && cLights.size()>1 ? "#colored lights#": cLights && cLights.size()==1 ? "@colored light@" : "%colored lights%"; devices=cLights; aliasType="color" }
     if (listType=~/switch/) { outputTxt = switches? "You can turn on, off or toggle the following switches: " +  getList(switches) + ". " : "%switches%" ; aliasType="switch" }
     if (listType=~/routine/) { outputTxt= listRoutines && listRoutines.size()>1 ? "#routines#":listRoutines && listRoutines.size()==1 ? "@routine@" : "%routines%"; devices=listRoutines }
@@ -1096,7 +1082,6 @@ def processList(){
         "You may also include the number of events you would like to hear. An example would be, 'tell ${invocationName} to give me the last 4 events for the Bedroom'. "
     }
     if (listType =~/alias/) outputTxt = "You can not list aliases directly. To hear the aliases that are available, choose a specific device catagory to list. For example, if you list the available switch devices, any switch aliases you created will be listed as well. "
-    if (listType ==~/color temperatures|color temperature/) outputTxt = aLights ? "The available color temperatures to use with ambient lights are: " + getList(fillColorTemperatureSettings().name) + ". " : "%ambient lights%"
     if (listType ==~/colors|color/) outputTxt = cLights ? "The available colors to use with colored lights are: " + getList(fillColorSettings().name) + ". " : "%colored lights%"
     if (listType ==~/group|groups|macro|macros/) outputTxt ="Please be a bit more specific about which groups or macros you want me to list. You can ask me about 'core triggers', 'macro groups', 'device groups', 'control macros' and 'voice reports'. %1%"
     if (listType ==~/sensor|sensors/) outputTxt ="Please be a bit more specific about what kind of sensors you want me to list. You can ask me to list items like 'water', 'open close', 'presence', 'acceleration, or 'motion sensors'. %1%"
@@ -1191,12 +1176,9 @@ def processMacro() {
         if (err) outputTxt = "You don't have a default value set up for the ${outputTxt} level. I am not making any adjustments. "
     }
     def getColorData = fillColorSettings().find {it.name.toLowerCase()==param}
-    def getColorTempData = fillColorTemperatureSettings().find {it.name.toLowerCase()==param}
     if (getColorData){
         def hueColor = getColorData.hue, satLevel = getColorData.sat
         colorData = [hue: hueColor as int, saturation: satLevel as int] 
-    } else if (getColorTempData) {
-        colorData = getColorTempData.temp
     }
 	def count = getChildApps().count {it.label.toLowerCase().replaceAll("[^a-zA-Z0-9 ]", "") == mac.toLowerCase()}
     if (!err){
@@ -1491,24 +1473,24 @@ def getReply(devices, type, STdeviceName, op, num, param){
                     }
             	}
             }
-            if (type ==~ /ambient|color|level|switch/){
+            if (type ==~ /color|level|switch/){
                 num = num < 0 ? 0 : num >99 ? 100 : num
                 def overRideMsg = "" 
                 if (op == "maximum") num = 100
-                if ((op ==~/increase|raise|up|decrease|down|lower|brighten|dim/) && (type == "ambient" || type == "color" || type == "level")){
+                if ((op ==~/increase|raise|up|decrease|down|lower|brighten|dim/) && (type == "color" || type == "level")){ 
                      def newValues = upDown(STdevice, type, op, num, STdeviceName)
                      num = newValues.newLevel
                      op= num > 0 ? "on" : "off"
                      overRideMsg = newValues.msg
                 }
-                if (op ==~/low|medium|high/ && type ==~ /ambient|color|level/){
+                if (op ==~/low|medium|high/ && type ==~ /color|level/){
                 	if (op=="low" && dimmerLow) num = dimmerLow else if (op=="low" && dimmerLow=="") num =0 
                     if (op=="medium" && dimmerMed) num = dimmerMed else if (op=="medium" && !dimmerMed) num = 0 
                     if (op=="high" && dimmerHigh) num = dimmerHigh else if (op=="high" && !dimmerhigh) num = 0 
                     if (num>0) overRideMsg = "I am turning the ${STdeviceName} to ${op}, or a value of ${num}%. "
                     if (num==0) overRideMsg = "You don't have a default value set up for the '${op}' level. I am not making any changes to the ${STdeviceName}. %1%"
                 }
-                if ((type == "switch") || (type ==~ /ambient|color|level/ && num==0 )){
+                if ((type == "switch") || (type ==~ /color|level/ && num==0 )){
                     if (type ==~ /color|level/ && num==0 && op=="undefined" && param=="undefined") op="off"
                 	if (op==~/on|off/){
                 		STdevice."$op"() 
@@ -1520,7 +1502,7 @@ def getReply(devices, type, STdeviceName, op, num, param){
                         result = "I am toggling the ${STdeviceName} from '${oldstate}' to '${newstate}'. "
                     }
             	}
-                if (type ==~ /ambient|color|level/ && num > 0) {
+                if (type ==~ /color|level/ && num > 0) {
                 	STdevice.setLevel(num)
                     result = overRideMsg ? overRideMsg : num==100 ? "I am setting the ${STdeviceName} to its maximum value. " : "I am setting the ${STdeviceName} to ${num}%. "                    
 				}
@@ -1533,25 +1515,13 @@ def getReply(devices, type, STdeviceName, op, num, param){
                         STdevice?.setColor(newValue)
                         result = "I am setting the color of the ${STdeviceName} to ${param}"
                         result += num>0 ? ", at a brightness level of ${num}%. " : ". "
-                    }
-                }
-                if (type == "ambient" && param !="undefined" && supportedCaps.name.contains("Color Temperature")){
-                    def getColorData = fillColorTemperatureSettings().find {it.name.toLowerCase()==param}
-                    if (getColorData){
-                        def newLevel = num > 0 ? num : STdevice.currentValue("level")
-                        def newValue = getColorData.temp
-                        STdevice?.setColorTemperature(newValue)
-                        result = "I am setting the color of the ${STdeviceName} to ${param}"
-                        result += num>0 ? ", at a brightness level of ${num}%. " : ". "
-                    }
+                	}
                 }
             	if (!result){
                 	if (type=="switch") result = "For the ${STdeviceName} switch, be sure to give an 'on', 'off' or 'toggle' command. %1%"
             		if (type=="level") result = overRideMsg ? overRideMsg: "For the ${STdeviceName} dimmer, be sure to use an 'on', 'off', 'toggle' command or brightness level setting. %1%"
-                    if (type=="ambient") result = overRideMsg ? overRideMsg: "For the ${STdeviceName} color temperature controller, remember it can be operated like a switch. You can ask me to turn it on, off, toggle "+
-                            "the on and off states, or set a brightness level. You can also set it to a variety of color temperatures. For listing of these colors, simply say, 'tell SmartThings to list the color temperaturs'. %1%"
-                    if (type=="color") result = overRideMsg ? overRideMsg: "For the ${STdeviceName} color controller, remember it can be operated like a switch. You can ask me to turn it on, off, toggle "+
-                            "the on and off states, or set a brightness level. You can also set it to a variety of common colors. For listing of these colors, simply say, 'tell SmartThings to list the colors'. %1%"
+            		if (type=="color") result = overRideMsg ? overRideMsg: "For the ${STdeviceName} color controller, remember it can be operated like a switch. You can ask me to turn it on, off, toggle "+  
+                    "the on and off states, or set a brightness level. You can also set it to a variety of common colors. For listing of these colors, simply say, 'tell SmartThings to list the colors'. %1%"
                 }
             }
             if (type == "music"){             
@@ -1675,7 +1645,7 @@ def macroResults(num, cmd, colorData, param,mNum){
 }
 //Group Handler
 def groupResults(num, op, colorData, param, mNum){   
-    def grpType = [switch:"switch", switchLevel:"dimmer", colorTemperature:"ambient light", colorControl:"colored light", windowShade:"window shade", doorControl: "door"][groupType]?:groupType
+    def grpType = [switch:"switch", switchLevel:"dimmer", colorControl:"colored light", windowShade:"window shade", doorControl: "door"][groupType]?:groupType
     String result = ""
     try {
         def noun= settings."groupDevice${groupType}".size()==1 ? grpType : grpType+"s"
@@ -1688,41 +1658,26 @@ def groupResults(num, op, colorData, param, mNum){
             else if (op == "toggle") { toggleState(settings."groupDevice${groupType}");result = voicePost && !noAck? replaceVoiceVar(voicePost,"") : noAck ? " " : "I am toggling the ${noun} in the group named '${app.label}'. " } 
             else result = "For a switch group, be sure to give an 'on', 'off' or 'toggle' command. %1%"
         }
-        else if (groupType==~/switchLevel|colorTemperature|colorControl/){
+        else if (groupType==~/switchLevel|colorControl/){
             num = num < 0 ? 0 : num >99 ? 100 : num
             if (op == "maximum") { num = 100; op ="undefined"; valueWord= "${proNoun} maximum brightness" }
             else if (op==~/low|medium|high/ && groupType=="switchLevel") { valueWord="${op}, or a value of ${num}%"; op ="undefined" }
-            else if (op==~/low|medium|high/ && groupType==~/colorTemperature|colorControl/ && !colorData ) { valueWord="${op}, or a value of ${num}%"; op ="undefined" }
+            else if (op==~/low|medium|high/ && groupType=="colorControl" && !colorData ) { valueWord="${op}, or a value of ${num}%"; op ="undefined" }
             else valueWord = "${num}%"
             if (num==0 && op=="undefined" && param=="undefined" && mNum!="undefined") op="off"
             if (op ==~/on|off/){ settings."groupDevice${groupType}"?."$op"();result = voicePost ? replaceVoiceVar(voicePost,"") : noAck ? " " :  "I am turning ${op} the ${noun} in the group named '${app.label}'. "}
             else if (op == "toggle") { toggleState(settings."groupDevice${groupType}");result = voicePost ? replaceVoiceVar(voicePost,"") : noAck ? " " : "I am toggling the ${noun} in the group named '${app.label}'. " }
             else if (groupType=="switchLevel" && num > 0 && op =="undefined") { settings."groupDevice${groupType}"?.setLevel(num); result = voicePost ? replaceVoiceVar(voicePost,"") : noAck ? " " : "I am setting the ${noun} in the group named '${app.label}' to ${valueWord}. " }
-            else if (groupType==~/colorTemperature|colorControl/ && num > 0 && !colorData && op =="undefined") { settings."groupDevice${groupType}"?.setLevel(num); result = voicePost && !noAck  ? replaceVoiceVar(voicePost,"") :  noAck ? " " :"I am setting the ${noun} in the '${app.label}' group to ${valueWord}. " }
-            else if (groupType=="colorTemperature" && colorData && param) {
-                settings."groupDevice${groupType}"?.setColorTemperature(colorData)
-                if (!voicePost && !noAck){
-                    result ="I am setting the ${noun} in the '${app.label}' group to ${param}"
-                    result += num ==100 ? " and ${proNoun} maximum brightness" : num>0 ? ", at a brightness level of ${num}%" : ""
-                    result += ". "
-                }
-                else if (voicePost && !noAck)  result = replaceVoiceVar(voicePost,"")
-                else result = " "
-            }
+            else if (groupType=="colorControl" && num > 0 && !colorData && op =="undefined") { settings."groupDevice${groupType}"?.setLevel(num); result = voicePost && !noAck  ? replaceVoiceVar(voicePost,"") :  noAck ? " " :"I am setting the ${noun} in the '${app.label}' group to ${valueWord}. " }
             else if (groupType=="colorControl" && colorData && param) {
-                if (colorData instanceof Integer) {
-                    settings."groupDevice${groupType}"?.setColorTemperature(colorData)
-                }
-                else {
-                    if (num>0) colorData = [hue:colorData.hue, saturation: colorData.saturation, level: num]
-                    settings."groupDevice${groupType}"?.setColor(colorData)
-                }
+                if (num>0) colorData = [hue:colorData.hue, saturation: colorData.saturation, level: num]
+                settings."groupDevice${groupType}"?.setColor(colorData)
                 if (!voicePost && !noAck){
                     result ="I am setting the ${noun} in the '${app.label}' group to ${param}"
                     result += num ==100 ? " and ${proNoun} maximum brightness" : num>0 ? ", at a brightness level of ${num}%" : ""
                     result += ". "
                 }
-                else if (voicePost && !noAck)  result = replaceVoiceVar(voicePost,"")
+                else if (voicePost && !noAck)  result = replaceVoiceVar(voicePost,"") 
                 else result = " "
             }
             else if (op ==~/increase|raise|up|brighten|decrease|down|lower|dim/){
@@ -1746,9 +1701,8 @@ def groupResults(num, op, colorData, param, mNum){
                 }
                 else result = "The default increase or decrease value is set to zero within the SmartApp. I am taking no action. %1%"
             }
-            else if (groupType=="switchLevel") result = "For a dimmer group, be sure to use an 'on', 'off', 'toggle' or brightness level setting. %1%"
-            else if (groupType=="colorTemperature") result = "For an ambient light group, be sure to give me an 'on', 'off', 'toggle', brightness level or color command. %1%"
-            else if (groupType=="colorControl") result = "For a colored light group, be sure to give me an 'on', 'off', 'toggle', brightness level or color command. %1%"
+            else if (groupType=="switchLevel") result = "For a dimmer group, be sure to use an 'on', 'off', 'toggle' or brightness level setting. %1%" 
+            else if (groupType=="colorControl") result = "For a colored light group, be sure to give me an 'on', 'off', 'toggle', brightness level or color command. %1%" 
         }
         else if (groupType=="lock"){
             noun=settings."groupDevice${groupType}".size()==1 ? "device" : "devices"
@@ -1891,7 +1845,7 @@ def controlResults(sDelay){
 }
 def controlHandler(){
    	state.scheduled = false
-   	def cmd = [switch: switchesCMD, dimmer: dimmersCMD, aLight: aLightsCMD, cLight: cLightsCMD, tstat: tstatsCMD, lock: locksCMD, garage: garagesCMD, shade: shadesCMD]
+   	def cmd = [switch: switchesCMD, dimmer: dimmersCMD, cLight: cLightsCMD, tstat: tstatsCMD, lock: locksCMD, garage: garagesCMD, shade: shadesCMD]
     if (phrase) location.helloHome.execute(phrase)
 	if (setMode && location.mode != setMode) {
 		if (location.modes?.find{it.name == setMode}) setLocationMode(setMode)
@@ -1905,20 +1859,12 @@ def controlHandler(){
         }
         else cmd.dimmer == "toggle" ? toggleState(dimmers) : dimmers?."${cmd.dimmer}"()
     }
-    if (aLights && cmd.aLight){
-        if (cmd.aLight == "set"){
-            def level = !aLightsLVL || aLightsLVL < 0 ? 0 : aLightsLVL >100 ? 100 : aLightsLVL as int
-            aLightsCLR ? setAmbientLights(aLights, aLightsCLR, level, type) : aLights?.setLevel(level)
-        }
-        else if (cmd.aLight == "toggle") toggleState(aLights)
-        else aLights?."${cmd.aLight}"()
-    }
     if (cLights && cmd.cLight){
-        if (cmd.cLight == "set"){
+    	if (cmd.cLight == "set"){
             def level = !cLightsLVL || cLightsLVL < 0 ? 0 : cLightsLVL >100 ? 100 : cLightsLVL as int
             cLightsCLR ? setColoredLights(cLights, cLightsCLR, level, type) : cLights?.setLevel(level)
         }
-        else if (cmd.cLight == "toggle") toggleState(cLights)
+        else if (cmd.cLight == "toggle") toggleState(cLights)	
         else cLights?."${cmd.cLight}"()
     }
     if (locks && cmd.lock) locks?."${cmd.lock}"()
@@ -2312,7 +2258,7 @@ def macroTypeDesc(){
     	voiceTempSettings || voiceTempVar || voiceHumidVar || voiceHumidity || greyOutWeather()=="complete" || voiceWater || voiceMotion || voicePresence || 
         voiceBattery || voicePost || voiceMode || voiceSHM || voicePower || voiceAccel)) desc= "Voice Report CONFIGURED - Tap to edit" 
 	if (macroType =="Group" && groupType && settings."groupDevice${groupType}") {
-    	def groupDesc =[switch:"Switch Group",switchLevel:"Dimmer Group",thermostat:"Thermostat Group",colorTemperature:"Ambient Light Group",colorControl:"Colored Light Group",lock:"Lock Group",doorControl: "Door Group",windowShade: "Window Shade Group"][groupType] ?: groupType
+    	def groupDesc =[switch:"Switch Group",switchLevel:"Dimmer Group",thermostat:"Thermostat Group",colorControl:"Colored Light Group",lock:"Lock Group",doorControl: "Door Group",windowShade: "Window Shade Group"][groupType] ?: groupType
         def countDesc = settings."groupDevice${groupType}".size() == 1 ? "one device" : settings."groupDevice${groupType}".size() + " devices"
         if (parent.stelproCMD && groupType=="thermostat") customAck = "- Accepts Stelpro baseboard heater commands" + customAck
         if (parent.nestCMD && groupType=="thermostat") customAck = "- Accepts Nest 'Home'/'Away' commands" + customAck
@@ -2464,30 +2410,21 @@ def getAudioDesc(){
     return result
 }
 def getDeviceDesc(){  
-    def result, cmd = [switch: switchesCMD, dimmer: dimmersCMD, aLight: aLightsCMD, cLight: cLightsCMD, tstat: tstatsCMD, lock: locksCMD, garage: garagesCMD, shade: shadesCMD]
+    def result, cmd = [switch: switchesCMD, dimmer: dimmersCMD, cLight: cLightsCMD, tstat: tstatsCMD, lock: locksCMD, garage: garagesCMD, shade: shadesCMD]
 	def lvl = cmd.dimmer == "set" && dimmersLVL ? dimmersLVL as int : 0
-    def aLvl = cmd.aLight == "set" && aLightsLVL ? aLightsLVL as int : 0
-    def aTemp = cmd.aLight == "set" && aLightsCLR ? aLightsCLR  : ""
-    def cLvl = cmd.cLight == "set" && cLightsLVL ? cLightsLVL as int : 0
-    def clr = cmd.cLight == "set" && cLightsCLR ? cLightsCLR  : ""
+	def cLvl = cmd.cLight == "set" && cLightsLVL ? cLightsLVL as int : 0
+	def clr = cmd.cLight == "set" && cLightsCLR ? cLightsCLR  : ""
     def tLvl = tstats ? tstatLVL : 0
     lvl = lvl < 0 ? lvl = 0 : lvl >100 ? lvl=100 : lvl
     tLvl = tLvl < 0 ? tLvl = 0 : tLvl >100 ? tLvl=100 : tLvl
-    aLvl = aLvl < 0 ? aLvl = 0 : aLvl >100 ? aLvl=100 : aLvl
-    //aTemp = aTemp < 2200 ? aTemp = 2200 : aTemp > 6500 ? aTemp = 6500 : aTemp
     cLvl = cLvl < 0 ? cLvl = 0 : cLvl >100 ? cLvl=100 : cLvl
     if (switches || dimmers || cLights || tstats || locks || garages || shades) {
     	result = switches && cmd.switch ? "${switches} set to ${cmd.switch}" : ""
         result += result && dimmers && cmd.dimmer ? "\n" : ""
         result += dimmers && cmd.dimmer && cmd.dimmer  != "set" ? "${dimmers} set to ${cmd.dimmer}" : ""
-        result += dimmers && cmd.dimmer && cmd.dimmer == "set" ? "${dimmers} set to ${lvl}%" : ""
-        result += result && aLights && cmd.aLight ? "\n" : ""
-        result += aLights && cmd.aLight && cmd.aLight != "set" ? "${aLights} set to ${cmd.aLight}":""
-        result += aLights && cmd.aLight && cmd.aLight == "set" ? "${aLights} set to " : ""
-        result += aLights && cmd.aLight && cmd.aLight== "set" && aTemp ? "${aTemp} and " : ""
-        result += aLights && cmd.aLight && cmd.aLight == "set" ? "${aLvl}%" : ""
+        result += dimmers && cmd.dimmer && cmd.dimmer == "set" ? "${dimmers} set to ${lvl}%" : ""	
         result += result && cLights && cmd.cLight ? "\n" : ""
-        result += cLights && cmd.cLight && cmd.cLight != "set" ? "${cLights} set to ${cmd.cLight}":""
+    	result += cLights && cmd.cLight && cmd.cLight != "set" ? "${cLights} set to ${cmd.cLight}":""
         result += cLights && cmd.cLight && cmd.cLight == "set" ? "${cLights} set to " : ""
         result += cLights && cmd.cLight && cmd.cLight== "set" && clr ? "${clr} and " : ""
         result += cLights && cmd.cLight && cmd.cLight == "set" ? "${cLvl}%" : ""
@@ -2535,7 +2472,7 @@ private replaceVoiceVar(msg, delay) {
     def varList = parent.getVariableList(), temp = varList.temp != "undefined device" ? roundValue(varList.temp) + " degrees" : varList.temp
     def humid = varList.humid, people = varList.people
     def fullMacroType=[GroupM: "Macro Group", Control:"Control Macro", Group:"Device Group", Voice:"Voice Reporting"][macroType] ?: macroType
-	def fullDeviceType=[colorTemperature: "Ambient Light",colorControl: "Colored Light",switchLevel:"Dimmer" ,doorControl:"Door",lock:"Lock",switch:"Switch",thermostat:"Thermostat"][groupType] ?: groupType
+	def fullDeviceType=[colorControl: "Colored Light",switchLevel:"Dimmer" ,doorControl:"Door",lock:"Lock",switch:"Switch",thermostat:"Thermostat"][groupType] ?: groupType
     def delayMin = delay ? delay + " minutes" : "No delay specified"
     msg = macroType=="Group" ? msg.replace('%dtype%', "${fullDeviceType}") : msg.replace('%dtype%', "")
     msg = macroType=="Group" && groupType =="switch" ? msg.replace('%dtypes%', "switches") :  macroType=="Group" && groupType !="switch" ? msg.replace('%dtypes%', "${fullDeviceType}s") : msg.replace('%dtypes%', "")
@@ -2935,40 +2872,21 @@ def sendMSG(num, msg, push, recipients){
     }
 }
 def toggleState(swDevices){ swDevices.each{ it.currentValue("switch")=="off" ? it.on() : it.off() } }
-private setAmbientLights(switches, color, level, type){
-    def getColorData = parent.fillColorTemperatureSettings().find {it.name==color}
-    def colorTemp = getColorData ? getColorData.temp : 3000
-//    if (color == "Custom-User Defined"){
-//        hueColor = hueUserDefined ?  hueUserDefined  : 0
-//        satLevel = satUserDefined ? satUserDefined : 0
-//        hueColor = hueColor > 100 ? 100 : hueColor < 0 ? 0 : hueColor
-//        satLevel = satLevel > 100 ? 100 : satLevel < 0 ? 0 : satLevel
-//    }
-//    def newValue = [hue: hueColor as int, saturation: satLevel as int, level: level as int]
-    switches?.setColorTemperature(colorTemp)
-}
 private setColoredLights(switches, color, level, type){
-    def getColorData = parent.fillColorSettings().find {it.name==color}
-    def getTempData = parent.fillColorTemperatureSetings().find {it.name==color}
-    // Colored lights can also respond to color temperature configuration
-    if (getTempData) {
-        switches?.setColorTemperature(getTempData.temp)
-        return
-    }
+	def getColorData = parent.fillColorSettings().find {it.name==color}
     def hueColor = getColorData? getColorData.hue : 0, satLevel = getColorData ? getColorData.sat:0
-    if (color == "Custom-User Defined"){
-        hueColor = hueUserDefined ?  hueUserDefined  : 0
-        satLevel = satUserDefined ? satUserDefined : 0
-        hueColor = hueColor > 100 ? 100 : hueColor < 0 ? 0 : hueColor
-        satLevel = satLevel > 100 ? 100 : satLevel < 0 ? 0 : satLevel
-    }
+	if (color == "Custom-User Defined"){
+		hueColor = hueUserDefined ?  hueUserDefined  : 0
+		satLevel = satUserDefined ? satUserDefined : 0
+		hueColor = hueColor > 100 ? 100 : hueColor < 0 ? 0 : hueColor
+		satLevel = satLevel > 100 ? 100 : satLevel < 0 ? 0 : satLevel
+	}
     def newValue = [hue: hueColor as int, saturation: satLevel as int, level: level as int]
     switches?.setColor(newValue)
 }
 //Common Code (Parent)---------------------------------
 private switchesSel() { return switches || (deviceAlias && switchesAlias) }
 private dimmersSel() { return dimmers || (deviceAlias && dimmersAlias) }
-private aLightsSel() { return aLights || (deviceAlias && aLightsAlias) }
 private cLightsSel() { return cLights || (deviceAlias && cLightsAlias) }
 private doorsSel() { return doors || (deviceAlias && doorsAlias) }
 private locksSel() { return locks || (deviceAlias && locksAlias) }
@@ -3112,24 +3030,12 @@ def getDeviceAliasList(aliasType){
     if (result) result.devices.each{ resultList <<"${it}" }
     return resultList
 }
-def fillColorTemperatureSettings(){
-    def colorTempData = []
-    colorTempData << [name: "Incandescent", temp: 2200]
-    colorTempData << [name: "Soft White", temp: 2550]
-    colorTempData << [name: "Warm White", temp: 3000]
-    colorTempData << [name: "Studio White", temp: 3500]
-    colorTempData << [name: "Moonlight", temp: 4100]
-    colorTempData << [name: "Horizon", temp: 5000]
-    colorTempData << [name: "Daylight", temp: 6500]
-    //if (customName && (customHue > -1 && customerHue < 101) && (customSat > -1 && customerSat < 101)) colorData << [name: customName, hue: customHue as int, sat: customSat as int]
-    return colorTempData
-}
 def fillColorSettings(){
-    def colorData = []
+	def colorData = []
     colorData << [name: "White", hue: 0, sat: 0] << [name: "Orange", hue: 11, sat: 100] << [name: "Red", hue: 100, sat: 100] << [name: "Purple", hue: 77, sat: 100]
     colorData << [name: "Green", hue: 30, sat: 100] << [name: "Blue", hue: 66, sat: 100] << [name: "Yellow", hue: 16, sat: 100] << [name: "Pink", hue: 95, sat: 100]
     colorData << [name: "Cyan", hue: 50, sat: 100] << [name: "Chartreuse", hue: 25, sat: 100] << [name: "Teal", hue: 44, sat: 100] << [name: "Magenta", hue: 92, sat: 100]
-    colorData << [name: "Violet", hue: 83, sat: 100] << [name: "Indigo", hue: 70, sat: 100]<< [name: "Marigold", hue: 16, sat: 75]<< [name: "Raspberry", hue: 99, sat: 75]
+	colorData << [name: "Violet", hue: 83, sat: 100] << [name: "Indigo", hue: 70, sat: 100]<< [name: "Marigold", hue: 16, sat: 75]<< [name: "Raspberry", hue: 99, sat: 75]
     colorData << [name: "Fuchsia", hue: 92, sat: 75] << [name: "Lavender", hue: 83, sat: 75]<< [name: "Aqua", hue: 44, sat: 75]<< [name: "Amber", hue: 11, sat: 75]
     colorData << [name: "Carnation", hue: 99, sat: 50] << [name: "Periwinkle", hue: 70, sat: 50]<< [name: "Pistachio", hue: 30, sat: 50]<< [name: "Vanilla", hue: 16, sat: 50]
     if (customName && (customHue > -1 && customerHue < 101) && (customSat > -1 && customerSat < 101)) colorData << [name: customName, hue: customHue as int, sat: customSat as int]
@@ -3163,8 +3069,7 @@ def mapDevices(isAlias){
 	def result =[],  ext= isAlias ? "Alias": ""
 	if (settings."switches${ext}") result << [devices: settings."switches${ext}", type : "switch",fullListName:"Switch"]
 	if (settings."dimmers${ext}") result << [devices: settings."dimmers${ext}", type : "level",fullListName:"Dimmer"]
-    if (settings."aLights${ext}") result << [devices: settings."aLights${ext}", type : "ambient",fullListName:"Ambient Light"]
-    if (settings."cLights${ext}") result << [devices: settings."cLights${ext}", type : "color",fullListName:"Colored Light"]
+	if (settings."cLights${ext}") result << [devices: settings."cLights${ext}", type : "color",fullListName:"Colored Light"]
 	if (settings."doors${ext}") result << [devices: settings."doors${ext}", type : "door",fullListName:"Door Control"]
 	if (settings."shades${ext}") result << [devices: settings."shades${ext}", type : "shade",fullListName:"Window Shade"]
 	if (settings."locks${ext}") result << [devices: settings."locks${ext}", type : "lock",fullListName:"Lock"]
@@ -3280,7 +3185,6 @@ def setupData(){
     		if (settings."sonosSlot${i}Name" && settings."sonosSlot${i}Music") PARAMS<<settings."sonosSlot${i}Name".replaceAll("[^a-zA-Z0-9 ]", "").toLowerCase()
     	}
     }
-    if (aLightsSel() || childApps.size()) { fillColorTemperatureSettings().each {PARAMS<<it.name.toLowerCase()}}
     if (cLightsSel() || childApps.size()) { fillColorSettings().each {PARAMS<<it.name.toLowerCase()}}
     duplicates = PARAMS.findAll{PARAMS.count(it)>1}.unique()
     if (duplicates.size()){ 
@@ -3326,9 +3230,9 @@ def setupData(){
 	displayData(result)
 }
 def fillTypeList(){
-	return ["reports","report","switches","switch","dimmers","dimmer","colored lights","ambient lights","color","colors","speakers","speaker","water sensor","water sensors","water","lock","locks","thermostats","thermostat",
+	return ["reports","report","switches","switch","dimmers","dimmer","colored lights","color","colors","speakers","speaker","water sensor","water sensors","water","lock","locks","thermostats","thermostat",
     	"temperature sensors","modes","routines","smart home monitor","SHM","security","temperature","door","doors", "humidity", "humidity sensor", "humidity sensors","presence", "presence sensors", "motion", 
-        "motion sensor", "motion sensors", "door sensor", "door sensors", "window sensor", "window sensors", "open close sensors","ambient light","colored light", "events","macro", "macros", "group", "groups", "voice reports",
+        "motion sensor", "motion sensors", "door sensor", "door sensors", "window sensor", "window sensors", "open close sensors","colored light", "events","macro", "macros", "group", "groups", "voice reports", 
         "voice report", "device group", "device groups","control macro", "control macros","control", "controls","macro group","macro groups","device macros","device macro","device group macro","device group macros",
         "core","core trigger","core macro","core macros","core triggers","sensor", "sensors","shades", "window shades","shade", "window shade","acceleration", "acceleration sensor", "acceleration sensors", "alias","aliases"] 
 }
@@ -3375,8 +3279,6 @@ private cheat(){
     if (getCheatDisplayList("switch")) { result += "<u>Aliases</u><br>"; result += getCheatDisplayList("switch") +"<br>" }
     if (dimmersSel()) { result += "<h2><u>Dimmers (Valid Commands: <b>On, Off, Toggle, Status Level {number}, low, medium, high, up, down, increase, decrease</b>)</u></h2>"; dimmers.each{ result += it.label +"<br>" } }
     if (getCheatDisplayList("level")) { result += "<u>Aliases</u><br>"; result += getCheatDisplayList("level") +"<br>" }
-    if (aLightsSel()) { result += "<h2><u>Ambient Lights (Valid Commands: <b>On, Off, Toggle, Level {number}, color {color temperature name} low, medium, high, up, down, increase, decrease</b>)</u></h2>"; aLights.each{ result += it.label +"<br>" } }
-    if (getCheatDisplayList("ambient")) { result += "<u>Aliases</u><br>"; result += getCheatDisplayList("ambient") +"<br>" }
     if (cLightsSel()) { result += "<h2><u>Colored Lights (Valid Commands: <b>On, Off, Toggle, Level {number}, color {color name} low, medium, high, up, down, increase, decrease</b>)</u></h2>"; cLights.each{ result += it.label +"<br>" } }
     if (getCheatDisplayList("color")) { result += "<u>Aliases</u><br>"; result += getCheatDisplayList("color") +"<br>" }
     if (doorsSel()) { result += "<h2><u>Doors (Valid Commands: <b>Open, Close, Status</b>)</u></h2>"; doors.each{ result += it.label +"<br>" } }
