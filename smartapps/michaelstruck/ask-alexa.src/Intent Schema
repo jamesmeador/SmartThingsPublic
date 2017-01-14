@@ -1,0 +1,99 @@
+{
+  "intents": [
+    {
+      "intent": "DeviceOperation",
+      "slots": [
+        {
+          "name" : "Operator",
+          "type" : "LIST_OF_OPERATORS"
+        },
+        {
+          "name" : "Device",
+          "type" : "LIST_OF_DEVICES"
+        },
+        {
+          "name" : "Num",
+          "type" : "AMAZON.NUMBER"
+        },
+        {
+          "name" : "Param",
+          "type" : "LIST_OF_PARAMS"
+        }
+        
+        ]
+    },  
+	{
+      "intent": "MacroOperation",
+      "slots": [
+        {
+          "name" : "Macro",
+          "type" : "LIST_OF_MACROS"
+        },
+        {
+          "name" : "MNum",
+          "type" : "AMAZON.NUMBER"
+        },
+        {
+          "name" : "MCmd",
+          "type" : "LIST_OF_OPERATORS"
+        },
+        {
+          "name" : "Cancel",
+          "type" : "CANCEL_CMDS"
+        },
+        {
+          "name" : "MParam",
+          "type" : "LIST_OF_PARAMS"
+        },
+        {
+          "name" : "MPW",
+          "type" : "AMAZON.NUMBER"
+        }
+        ]
+    },
+    {
+      "intent": "ListOperation",
+      "slots": [
+        {
+          "name" : "Type",
+          "type" : "DEVICE_TYPE_LIST"
+        }
+        ]
+    },
+    {
+      "intent": "VersionOperation"
+    },
+    {
+      "intent": "SmartHomeOperation",
+      "slots": [
+        {
+          "name" : "SHCmd",
+          "type" : "LIST_OF_SHCMD"
+        },
+        {
+          "name" : "SHParam",
+          "type" : "LIST_OF_SHPARAM"
+        },
+        {
+          "name" : "SHNum",
+          "type" : "AMAZON.NUMBER"
+        }
+        ]
+    },
+    {
+		"intent": "AMAZON.HelpIntent"
+    },
+    {
+  		"intent": "AMAZON.CancelIntent"
+	},
+	{
+ 		"intent": "AMAZON.StopIntent"
+	},
+	{
+ 		"intent": "AMAZON.NoIntent"
+	},	
+    {
+    	"intent": "AMAZON.YesIntent"
+    }
+	]
+}
